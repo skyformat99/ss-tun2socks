@@ -10,6 +10,8 @@
 - SS、SSR 或其它支持 UDP Relay 的 socks5 代理
 
 ## 端口占用
+> 请检查是否有端口被占用，如果有请自行解决！
+
 - pdnsd：0.0.0.0:53/udp
 - chinadns：0.0.0.0:65353/udp
 
@@ -18,14 +20,18 @@
 - `git clone https://github.com/zfl9/ss-tun2socks.git`
 
 **安装**
-- `cd ss-tun2socks/`
+- `cd ss-tun2socks`
 - `cp -af ss-tun2socks /usr/local/bin/`
 - `cp -af tun2socks.bin/tun2socks.ARCH /usr/local/bin/tun2socks`（先解压，注意 ARCH）
-- `mkdir -p /etc/tun2socks/`
+- `chown root:root /usr/local/bin/tun2socks /usr/local/bin/ss-tun2socks`
+- `chmod +x /usr/local/bin/tun2socks /usr/local/bin/ss-tun2socks`
+- `mkdir -m 0755 -p /etc/tun2socks`
 - `cp -af pdnsd.conf /etc/tun2socks/`
 - `cp -af chnroute.txt /etc/tun2socks/`
 - `cp -af chnroute.ipset /etc/tun2socks/`
 - `cp -af ss-tun2socks.conf /etc/tun2socks/`
+- `chown -R root:root /etc/tun2socks`
+- `chmod 0644 /etc/tun2socks/*`
 
 **配置**
 - `vim /etc/tun2socks/ss-tun2socks.conf`，修改开头的 `socks5 配置`。
@@ -34,6 +40,9 @@
 - `socks5_runcmd="nohup ss-local -c /etc/ss-local.json < /dev/null &>> /var/log/ss-local.log &"`<br>
 启动 SS/SSR 的命令，此命令必须能够后台运行（即：不能占用前台）。<br>
 如 `service [service-name] start`、`systemctl start [service-name]` 等。
+- `chinadns_upstream="114.114.114.114,8.8.8.8"`：建议将 114 替换为原网络下的 DNS
+- `iptables_intranet=(192.168.0.0/16)`：如果内网网段不是 192.168/16，请修改（多个使用空格隔开）
+- `dns_original=(114.114.114.114 119.29.29.29 180.76.76.76)`：建议修改为原网络下的 DNS（最多 3 个）
 
 **自启**（Systemd）
 - `cp -af ss-tun2socks.service /etc/systemd/system/`
@@ -57,8 +66,16 @@
 - `ss-tun2socks flush_dnsche`：清空 dns 缓存（pdnsd 的缓存）
 - `ss-tun2socks update_chnip`：更新大陆地址段列表（ipset、chinadns）
 
+**日志**
+> 如需详细日志，请打开 ss-tun2socks.conf 中相关的 verbose 选项。
+
+- pdnsd：`/var/log/pdnsd.log`
+- chinadns：`/var/log/chinadns.log`
+- tun2socks：`/var/log/tun2socks.log`
+
 ## 相关参考
 - [pdnsd](http://members.home.nl/p.a.rombouts/pdnsd/index.html)
 - [ChinaDNS](https://github.com/shadowsocks/ChinaDNS)
 - [badvpn](https://github.com/ambrop72/badvpn)
 - [gotun2socks](https://github.com/yinghuocho/gotun2socks)
+- [ss-tproxy 常见问题](https://www.zfl9.com/ss-redir.html#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98)
