@@ -138,10 +138,12 @@ function pbr_del() {
 
 function kernel_opts() {
     if [ $(cat /proc/sys/net/ipv4/ip_forward) -ne 1 ]; then
-        echo 1 > /proc/sys/net/ipv4/ip_forward
+        #echo 1 > /proc/sys/net/ipv4/ip_forward
+        sysctl -w net.ipv4.ip_forward=1
     fi
     if [ $(cat /proc/sys/net/ipv4/conf/$tun2socks_tundev/rp_filter) -ne 2 ]; then
-        echo 2 > /proc/sys/net/ipv4/conf/$tun2socks_tundev/rp_filter
+        #echo 2 > /proc/sys/net/ipv4/conf/$tun2socks_tundev/rp_filter
+        sysctl -w net.ipv4.conf.$tun2socks_tundev.rp_filter=2
     fi
 }
 
@@ -165,11 +167,6 @@ function current_ip() {
 
 function start() {
     dns_origin
-
-    if [ ! -e ${chinadns_chnroute} ]; then
-        echo -e "\e[37m${chinadns_chnroute}\e[0m  [\e[1;35mnot_exist\e[0m]"
-        exit 1
-    fi
 
     eval "${socks5_runcmd}"
 
