@@ -1,4 +1,6 @@
 # tun2socks 透明代理
+> ss-tun2socks 不再维护，请各位使用 [ss-tproxy v2](https://github.com/zfl9/ss-tproxy) 版本。
+
 ## 脚本依赖
 - [脚本依赖 - 安装参考](https://www.zfl9.com/ss-redir.html#%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96)
 - curl，获取大陆地址段列表
